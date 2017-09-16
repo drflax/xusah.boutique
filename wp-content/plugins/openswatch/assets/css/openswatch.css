@@ -1,0 +1,70 @@
+.swatch li span {
+    display: block;
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    text-align: center;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+ul.swatch li.selected {
+    cursor: auto;
+    background: red;
+    color: #fff;
+}
+.swatch li {
+    border: 1px solid #000;
+    padding: 2px;
+    margin-right: 3px;
+    display: inline-block;
+    cursor: pointer;
+    -webkit-transition: all .3s ease-in-out;
+    -moz-transition: all .3s ease-in-out;
+    -ms-transition: all .3s ease-in-out;
+    -o-transition: all .3s ease-in-out;
+    transition: all .3s ease-in-out;
+    background: #fff;
+    overflow: hidden;
+}
+.item-colors ul{
+    margin: 0 auto;
+}
+
+.item-colors li {
+    display: inline-block;
+    margin: 0 2px;
+    opacity: .8;
+    -webkit-transition: all .3s;
+    -moz-transition: all .3s;
+    -ms-transition: all .3s;
+    -o-transition: all .3s;
+    transition: all .3s;
+}
+
+.item-colors li a {
+    display: block;
+    width: 26px;
+    height: 26px;
+    text-indent: -999em;
+}
+
+span.swatch-item {
+    float: left;
+    min-width: 28px;
+    height: auto;
+    text-align: center;
+    background-size: contain;
+}
+span.swatch-item img{
+    min-width: 20px;
+}
+
+li.chosen img{
+    border: 1px dotted #ff0000;
+}
+
+.openswatch_widget_layered_nav ul li{
+    min-height: 28px;
+}
