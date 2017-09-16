@@ -108,7 +108,7 @@ wp-content/themes/storefront/
 wp-content/themes/storefront-blank-child-theme/
 
 
-wp-content/plugins/prdctfltr/
+!wp-content/plugins/prdctfltr/
 !wp-content/plugins/openswatch/
 
 
