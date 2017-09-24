@@ -700,18 +700,20 @@
 
 				var attribute = $(this);
 				var valOf = attribute.find('input[type="hidden"]:first');
-				if ( typeof valOf.val() !== 'undefined' && valOf.val() !== '' ) {
+				var makeVal = valOf.val();
+
+				if ( typeof makeVal !== 'undefined' && makeVal !== '' ) {
 
 					var vals = [];
 
-					if ( valOf.val().indexOf(',') > 0 ) {
-						vals = valOf.val().split(',');
+					if ( makeVal.indexOf(',') > 0 ) {
+						vals = makeVal.split(',');
 					}
-					else if ( valOf.val().indexOf('+') > 0 ) {
-						vals = valOf.val().split('+');
+					else if ( makeVal.indexOf('+') > 0 ) {
+						vals = makeVal.split('+');
 					}
 					else {
-						vals[0] = valOf.val();
+						vals[0] = makeVal;
 					}
 
 					var filter = $(this);
@@ -720,7 +722,7 @@
 
 					$.each(vals, function(i, val23) {
 
-						if ( filter.find('input[type="checkbox"][value="'+val23+'"]').length == 0 ) {
+						if ( curr.find('input[type="checkbox"][value="'+val23+'"]').length == 0 ) {
 							if ( typeof adds[filter.attr('data-filter')] == 'undefined' ) {
 								adds[filter.attr('data-filter')] = [];
 							}
@@ -737,7 +739,7 @@
 					obj.each( function() {
 						var wrap = $(this);
 						$.each(adds,function(i2,e2){
-							wrap.find('.prdctfltr_add_inputs').append('<input name="'+i2+'" value="'+e2+'" class="pf_added_input" />');
+							wrap.find('.prdctfltr_add_inputs').append('<input name="'+i2+'" value="'+valOf.val()+'" class="pf_added_input" />');
 						});
 					});
 				}
@@ -765,7 +767,7 @@
 	function prdctfltr_all_cats(curr) {
 
 		curr = ( curr == null ? $('.prdctfltr_wc') : curr );
-		var searchIn = curr.is('prdctfltr_wc') ? '.prdctfltr_filter.prdctfltr_attributes.prdctfltr_expand_parents .prdctfltr_sub' : '.prdctfltr_sub';
+		var searchIn = curr.is('prdctfltr_wc') ? '.prdctfltr_filter.prdctfltr_attributes.prdctfltr_expand_parents .prdctfltr_sub' : '.prdctfltr_expand_parents .prdctfltr_sub';
 
 		curr.find(searchIn).each( function() {
 			var curr = $(this);
@@ -863,9 +865,7 @@
 		if ( curr.find('.prdctfltr_filter.prdctfltr_attributes.prdctfltr_expand_parents').length > 0 ) {
 			prdctfltr_all_cats(curr);
 		}
-		else {
-			prdctfltr_show_opened_cats(curr);
-		}
+		prdctfltr_show_opened_cats(curr);
 
 		if ( curr.hasClass('pf_mod_masonry') ) {
 			curr.find('.prdctfltr_filter_inner').isotope({
@@ -1502,7 +1502,7 @@
 						var curr_settings = ( curr_val.indexOf('+') > 0 ? curr_val.replace('+' + curr_var, '').replace(curr_var + '+', '') : '' );
 
 						$.each(prdctfltr.js_filters, function(n18,obj43){
-							if ( obj43.adds[curr_name] !== null ) {
+							if ( typeof obj43.adds !== 'undefined' && obj43.adds[curr_name] !== null ) {
 								var check = prdctfltr.js_filters[n18].adds[curr_name];
 								prdctfltr.js_filters[n18].adds[curr_name] = ( typeof check !== 'undefined' && check.indexOf('+') > 0 ? check.replace('+' + curr_var, '').replace(curr_var + '+', '') : '' );
 							}
@@ -1512,7 +1512,7 @@
 						var curr_settings = ( curr_val.indexOf(',') > 0 ? curr_val.replace(',' + curr_var, '').replace(curr_var + ',', '') : '' );
 
 						$.each(prdctfltr.js_filters, function(n18,obj43){
-							if ( obj43.adds[curr_name] !== null ) {
+							if ( typeof obj43.adds !== 'undefined' && obj43.adds[curr_name] !== null ) {
 								var check = prdctfltr.js_filters[n18].adds[curr_name];
 								prdctfltr.js_filters[n18].adds[curr_name] = ( typeof check !== 'undefined' && check.indexOf(',') > 0 ? check.replace(',' + curr_var, '').replace(curr_var + ',', '') : '' );
 							}
@@ -1565,6 +1565,20 @@
 					});
 
 					if ( curr.hasClass('prdctfltr_merge_terms') ) {
+
+						if ( curr.closest('.prdctfltr_wc').find('.prdctfltr_filter[data-filter="'+curr_name+'"]').length>1 ) {
+							curr.find('.prdctfltr_active').each(function(){
+								var val12 = $(this).find('input[type="checkbox"]').val();
+								if ( curr_val.indexOf('+') > 0 ) {
+									curr_val = curr_val.replace('+' + val12, '').replace(val12 + '+', '');
+								}
+								else {
+									curr_val = curr_val.replace(val12, '');
+								}
+								$(this).find('input[type="checkbox"]').prop('checked',false).attr('checked',false).change().closest('label').removeClass('prdctfltr_active');
+							});
+						}
+
 						var curr_settings = ( curr_val == '' ? curr_var : curr_val + '+' + curr_var );
 					}
 					else {
@@ -1953,9 +1967,11 @@
 
 		}
 		else if ( typeof selectedTerms[0] == 'undefined' ) {
-			curr.find('.prdctfltr_title_selected').remove();
-			curr.closest('.prdctfltr_wc').find('.prdctfltr_collector .prdctfltr_title_remove[data-key="'+curr.attr('data-filter')+'"]').closest('.prdctfltr_title_selected').remove();
-			curr.closest('.prdctfltr_wc').find('.prdctfltr_topbar .prdctfltr_title_remove[data-key="'+curr.attr('data-filter')+'"]').closest('.prdctfltr_title_selected').remove();
+			if ( curr.closest('.prdctfltr_wc').find('.prdctfltr_attributes[data-filter="'+curr.attr('data-filter')+'"] label.prdctfltr_active').length == 0 ) {
+				curr.find('.prdctfltr_title_selected').remove();
+				curr.closest('.prdctfltr_wc').find('.prdctfltr_collector .prdctfltr_title_remove[data-key="'+curr.attr('data-filter')+'"]').closest('.prdctfltr_title_selected').remove();
+				curr.closest('.prdctfltr_wc').find('.prdctfltr_topbar .prdctfltr_title_remove[data-key="'+curr.attr('data-filter')+'"]').closest('.prdctfltr_title_selected').remove();
+			}
 		}
 
 		if ( curr.closest('.prdctfltr_wc').hasClass('pf_mod_masonry') ) {
@@ -2533,7 +2549,7 @@
 						//pf_query: prdctfltr.js_filters[pf_id].args,
 						pf_shortcode: prdctfltr.js_filters[pf_id].atts,
 						//pf_atts: prdctfltr.js_filters[pf_id].atts_sc,
-						pf_adds: prdctfltr.js_filters[pf_id].adds,
+						//pf_adds: prdctfltr.js_filters[pf_id].adds,
 						//pf_ajax_query_vars: prdctfltr.ajax_query_vars,
 						pf_filters: curr_fields,
 						//pf_mode: 'archive',
@@ -2581,6 +2597,13 @@
 					if ( prdctfltr.active_sc !== '' ) {
 						data.pf_active = prdctfltr.active_sc;
 					}
+
+					curr_filter.find('.pf_added_input').each(function() {
+						if ( typeof data.pf_adds == 'undefined' ) {
+							data.pf_adds = {};
+						}
+						data.pf_adds[$(this).attr('name')] = $(this).val();
+					});
 
 					$.ajax({
 						type: 'POST',

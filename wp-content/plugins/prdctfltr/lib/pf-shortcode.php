@@ -384,6 +384,28 @@
 
 			$query_args = self::add_taxonomy_args( $query_args, $taxonomies, $atts['operator'] );
 
+			if ( !empty( $atts['min_price'] ) ) {
+				$query_args['min_price'] = $atts['min_price'];
+			}
+
+			if ( !empty( $atts['max_price'] ) ) {
+				$query_args['max_price'] = $atts['max_price'];
+			}
+
+			if ( !empty( $atts['sale_products'] ) && $atts['sale_products'] == 'on' ) {
+				$query_args['sale_products'] = 'on';
+			}
+
+			if ( !empty( $atts['instock_products'] ) && in_array( $atts['instock_products'], array( 'in', 'out', 'both' ) ) ) {
+				self::$settings['sc_instock'] = $atts['instock_products'];
+				$query_args['instock_products'] = $atts['instock_products'];
+			}
+
+			if ( !empty( $atts['http_query'] ) ) {
+				parse_str( html_entity_decode( $atts['http_query'] ), $httpQuery );
+				$query_args = array_merge( $query_args, $httpQuery );
+			}
+
 			if ( isset( $ordering_args['meta_key'] ) ) {
 				$query_args['meta_key'] = $ordering_args['meta_key'];
 			}
@@ -392,6 +414,9 @@
 
 			if ( !is_ajax() && !isset( $prdctfltr_global['done_filters'] ) ) {
 				WC_Prdctfltr::make_global( $_REQUEST, 'FALSE' );
+				if ( isset( self::$settings['sc_instock'] ) ) {
+					unset( self::$settings['sc_instock'] );
+				}
 			}
 
 			$prdctfltr_global['sc_init'] = true;

@@ -244,7 +244,7 @@
 				'type'        => 'dropdown',
 				'class'       => '',
 				'heading'     => __( 'Instock Products', 'prdctfltr' ),
-				'param_name'  => 'sale_products',
+				'param_name'  => 'instock_products',
 				'value'       => array(
 					'Default' => '',
 					'in',
@@ -340,7 +340,7 @@
 				'std'         => 'no'
 			),
 
-			array(
+/*			array(
 				'type'        => 'dropdown',
 				'class'       => '',
 				'heading'     => __( 'Disable Filtering for WC Shortcodes', 'prdctfltr' ),
@@ -352,7 +352,7 @@
 				'description' => '',
 				'std'         => 'no'
 			),
-
+*/
 			array(
 				'type'        => 'dropdown',
 				'class'       => '',

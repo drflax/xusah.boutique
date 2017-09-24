@@ -226,7 +226,7 @@
 			}
 
 			$prdctfltr_global['filter_js'][self::$settings['instance']['id']] = array(
-				'adds' => isset( $prdctfltr_global['ajax_adds'] ) ? $prdctfltr_global['ajax_adds'] : array(),
+				/*'adds' => isset( $prdctfltr_global['ajax_adds'] ) ? $prdctfltr_global['ajax_adds'] : array(),*/
 				'widget_search' => isset( $prdctfltr_global['widget_search'] ) ? 'yes' : 'no',
 				'widget_options' => isset( $prdctfltr_global['widget_options'] ) ? $prdctfltr_global['widget_options'] : '',
 				'collectors' => WC_Prdctfltr::$settings['instance']['wc_settings_prdctfltr_selection_area'],
@@ -265,6 +265,7 @@
 			$active_filters = array();
 			$pf_n=0;
 			$pf_r=0;
+
 			foreach( $curr_elements as $el ) {
 
 				$el_fil = false;
@@ -361,8 +362,8 @@
 
 			$curr_scripts = self::$settings['wc_settings_prdctfltr_disable_scripts'];
 
-			//wp_register_style( 'prdctfltr', self::$url_path .'lib/css/prdctfltr.css', false, self::$version );
-			wp_register_style( 'prdctfltr', self::$url_path .'lib/css/prdctfltr.min.css', false, self::$version );
+			//wp_register_style( 'prdctfltr', self::$url_path .'lib/css/prdctfltr' . ( is_rtl() ? '-rtl' : '' ) . '.css', false, self::$version );
+			wp_register_style( 'prdctfltr', self::$url_path .'lib/css/prdctfltr' . ( is_rtl() ? '-rtl' : '' ) . '.min.css', false, self::$version );
 			wp_enqueue_style( 'prdctfltr' );
 
 			if ( !in_array( 'mcustomscroll', $curr_scripts ) ) {
@@ -916,6 +917,10 @@
 
 					$curr_instock = self::$settings['wc_settings_prdctfltr_instock'];
 
+					if ( !isset($active['instock_products']) && isset(WC_Prdctfltr_Shortcodes::$settings['sc_instock']) && in_array( WC_Prdctfltr_Shortcodes::$settings['sc_instock'], array( 'in', 'out', 'both' ) ) ) {
+						$active['instock_products'] = WC_Prdctfltr_Shortcodes::$settings['sc_instock'];
+					}
+
 					if ( ( ( ( isset( $active['instock_products'] ) && $active['instock_products'] !== '' && ( $active['instock_products'] == 'in' || $active['instock_products'] == 'out' ) ) || $curr_instock == 'yes' ) !== false ) && ( !isset( $active['instock_products'] ) || $active['instock_products'] !== 'both' ) ) {
 						$operator = isset( $active['instock_products'] ) && $active['instock_products'] == 'out' ? 'IN' : 'NOT IN';
 					}
@@ -1090,23 +1095,23 @@
 
 			}
 
-			if ( !isset($pf_activated['min_price']) && !isset($pf_activated['rng_min_price']) && isset($query->query['min_price']) && $query->query['min_price'] !== '' ) {
-				$pf_activated['min_price'] = $query->query['min_price'];
+			if ( !isset($pf_activated['min_price']) && !isset($pf_activated['rng_min_price']) && isset($query->query_vars['min_price']) && $query->query_vars['min_price'] !== '' ) {
+				$pf_activated['min_price'] = $query->query_vars['min_price'];
 			}
 
-			if ( !isset($pf_activated['max_price']) && !isset($pf_activated['rng_max_price']) && isset($query->query['max_price']) && $query->query['max_price'] !== '' ) {
-				$pf_activated['max_price'] = $query->query['max_price'];
+			if ( !isset($pf_activated['max_price']) && !isset($pf_activated['rng_max_price']) && isset($query->query_vars['max_price']) && $query->query_vars['max_price'] !== '' ) {
+				$pf_activated['max_price'] = $query->query_vars['max_price'];
 			}
 
-			if ( ( isset( $pf_activated['min_price'] ) || isset( $pf_activated['max_price'] ) ) !== false || ( isset( $pf_activated['rng_min_price'] ) && isset( $pf_activated['rng_max_price'] ) ) !== false || ( isset( $pf_activated['sale_products'] ) || isset( $query->query['sale_products'] ) ) !== false ) {
+			if ( ( isset( $pf_activated['min_price'] ) || isset( $pf_activated['max_price'] ) ) !== false || ( isset( $pf_activated['rng_min_price'] ) && isset( $pf_activated['rng_max_price'] ) ) !== false || ( isset( $pf_activated['sale_products'] ) || isset( $query->query_vars['sale_products'] ) ) !== false ) {
 				if ( self::$wc_version === false ) {
 					add_filter( 'posts_join' , array( &$this, 'prdctfltr_join_price' ), 99997 );
 					add_filter( 'posts_where' , array( &$this, 'prdctfltr_price_filter' ), 99998, 2 );
 				}
 				else {
-					$prices = self::get_prices();
+					$prices = self::get_prices( $query->query_vars );
 
-					if ( ( isset( $pf_activated['sale_products'] ) || isset( $query->query['sale_products'] ) ) !== false ) {
+					if ( ( isset( $pf_activated['sale_products'] ) || isset( $query->query_vars['sale_products'] ) ) !== false ) {
 						$curr_args['post__in'] = isset( $curr_args['post__in'] ) ? array_merge( $curr_args['post__in'], wc_get_product_ids_on_sale() ) : wc_get_product_ids_on_sale();
 					}
 					if ( isset( $prices['min_price'] ) || isset( $prices['max_price'] ) ) {
@@ -1145,7 +1150,7 @@
 				if ( !empty( $product_metas ) ) {
 					$curr_args['meta_query']['relation'] = 'AND';
 					$curr_args['meta_query'][] = $product_metas;
-					$checkMeta = $query->get( 'meta_query' );
+					$checkMeta = $query->query_vars['meta_query'];
 					if ( !empty( $checkMeta ) ) {
 						foreach( $checkMeta as $mk => $mv ) {
 							if ( $mk == 'price_filter' || is_array( $mv ) && key( $mv ) == 'price_filter' ) {
@@ -1158,6 +1163,9 @@
 			}
 
 			if ( self::$wc_version ) {
+				if ( !isset($pf_activated['instock_products']) && isset($query->query_vars['instock_products']) && in_array( $query->query_vars['instock_products'], array( 'in', 'out', 'both' ) ) ) {
+					$pf_activated['instock_products'] = $query->query_vars['instock_products'];
+				}
 
 				if ( ( ( ( isset( $pf_activated['instock_products'] ) && $pf_activated['instock_products'] !== '' && ( $pf_activated['instock_products'] == 'in' || $pf_activated['instock_products'] == 'out' ) ) || self::$settings['wc_settings_prdctfltr_instock'] == 'yes' ) !== false ) && ( !isset( $pf_activated['instock_products'] ) || $pf_activated['instock_products'] !== 'both' ) ) {
 
@@ -1186,7 +1194,7 @@
 							$curr_terms = implode( '","', array_map( 'esc_sql', $f_terms ) );
 							$outofstock = get_term_by( 'slug', 'outofstock', 'product_visibility' );
 
-							$variableStockOut = $wpdb->get_results( $wpdb->prepare( '
+							$variableStockOut = $wpdb->get_results( sprintf( '
 								SELECT DISTINCT(%1$s.post_parent) as ID FROM %1$s
 								INNER JOIN %2$s AS pf1 ON (%1$s.ID = pf1.post_id)
 								INNER JOIN %3$s ON (%1$s.ID = %3$s.object_id)
@@ -1224,7 +1232,7 @@
 				switch( $k ) {
 					case 'post__in' :
 						$v = array_unique( $v );
-						$postIn = $query->get( 'post__in' );
+						$postIn = isset( $query->query_vars['post__in'] ) && !empty( $query->query_vars['post__in'] ) ? $query->query_vars['post__in'] : array();
 						$ins = ( empty( $postIn ) ? $v : array_intersect( $postIn, $v ) );
 						$query->set( $k, $ins );
 					break;
@@ -1266,13 +1274,14 @@
 			$stop = true;
 			$curr_args = array();
 
-			if ( empty( $prdctfltr_global['active_filters'] ) && empty( $prdctfltr_global['active_permalinks'] ) ) {
+			$pf_tax_query = apply_filters( 'prdctfltr_tax_query', ( isset( self::$settings['tax_query'] ) ? self::$settings['tax_query'] : array() ) );
+
+			if ( empty( $prdctfltr_global['active_filters'] ) && empty( $prdctfltr_global['active_permalinks'] ) && empty( $pf_tax_query ) ) {
 				$prdctfltr_global['categories_active'] = true;
 				return $query;
 			}
 
 			$pf_activated = $prdctfltr_global['active_taxonomies'];
-			$pf_tax_query = apply_filters( 'prdctfltr_tax_query', isset( self::$settings['tax_query'] ) ? self::$settings['tax_query'] : array() );
 
 			if ( !empty( $pf_tax_query ) ) {
 
@@ -1280,19 +1289,28 @@
 
 				$now = !empty( $query->tax_query->queries ) ? $query->tax_query->queries : array();
 
-				$query->tax_query->queries = array_unique( array_merge( $pf_tax_query, $now ), SORT_REGULAR );
-				$query->query_vars['tax_query'] = array_unique( array_merge( $pf_tax_query, $now ), SORT_REGULAR );
+				if ( !empty( $now ) ) {
+					$query->tax_query->queries = array_unique( array_merge( $pf_tax_query, $now ), SORT_REGULAR );
+					$query->query_vars['tax_query'] = array_unique( array_merge( $pf_tax_query, $now ), SORT_REGULAR );
+				}
+				else {
+					$query->tax_query->queries = array_unique( $pf_tax_query, SORT_REGULAR );
+					$query->query_vars['tax_query'] = array_unique( $pf_tax_query, SORT_REGULAR );
+				}
 
-				if ( is_ajax() && empty( $query->tax_query->queried_terms ) ) {
+				if ( is_ajax() && empty( $query->tax_query->queried_terms ) && !empty( $pf_activated ) ) {
+
 					$addTerms = array();
+
 					foreach ( $pf_activated as $k => $v ) {
 						$addTerms[$k] = array(
 							'terms' => $v,
 							'field' => 'slug'
 						);
 					}
-
+					$query->is_tax = true;
 					$query->tax_query->queried_terms = $addTerms;
+
 				}
 
 			}
@@ -1391,7 +1409,7 @@
 
 			}
 
-			$prices = self::get_prices();
+			$prices = self::get_prices( $wp_query->query_vars );
 			$_min_price = isset( $prices['min_price'] ) ? $prices['min_price'] : null;
 			$_max_price = isset( $prices['max_price'] ) ? $prices['max_price'] : null;
 
@@ -1410,17 +1428,18 @@
 			
 		}
 
-		public static function get_prices() {
-			global $wp_query, $prdctfltr_global;
+		public static function get_prices( $query ) {
+			global $prdctfltr_global;
+			if ( empty( $query ) ) {
+				global $wp_query;
+				$query = $wp_query;
+			}
 
 			$pf_activated = $prdctfltr_global['active_filters'];
 
 			$_min_price = null;
-			if ( isset( $wp_query->query_vars['rng_min_price'] ) ) {
-				$_min_price = $wp_query->query_vars['rng_min_price'];
-			}
-			if ( isset( $wp_query->query_vars['min_price'] ) ) {
-				$_min_price =  $wp_query->query_vars['min_price'];
+			if ( isset( $query['min_price'] ) ) {
+				$_min_price =  $query['min_price'];
 			}
 			if ( isset( $pf_activated['rng_min_price'] ) ) {
 				$_min_price = $pf_activated['rng_min_price'];
@@ -1428,17 +1447,10 @@
 			if ( isset( $pf_activated['min_price'] ) ) {
 				$_min_price =  $pf_activated['min_price'];
 			}
-			/*if ( !isset( $_min_price ) ) {
-				$prices = WC_Prdctfltr::get_filtered_price();
-				$_min_price = floor( $prices->min_price );
-			}*/
 
 			$_max_price = null;
-			if ( isset( $wp_query->query_vars['rng_max_price'] ) ) {
-				$_max_price = $wp_query->query_vars['rng_max_price'];
-			}
-			if ( isset( $wp_query->query_vars['max_price'] ) ) {
-				$_max_price =  $wp_query->query_vars['max_price'];
+			if ( isset( $query['max_price'] ) ) {
+				$_max_price =  $query['max_price'];
 			}
 			if ( isset( $pf_activated['rng_max_price'] ) ) {
 				$_max_price = $pf_activated['rng_max_price'];
@@ -1446,10 +1458,7 @@
 			if ( isset( $pf_activated['max_price'] ) ) {
 				$_max_price =  $pf_activated['max_price'];
 			}
-			/*if ( !isset( $_max_price ) ) {
-				$prices = !isset( $prices ) ? WC_Prdctfltr::get_filtered_price() : $prices;
-				$_max_price = ceil( $prices->max_price );
-			}*/
+
 
 			if ( isset( $_min_price ) ) {
 				$_min_price = floatval( $_min_price ) - apply_filters( 'prdctfltr_min_price_margin', 0.01 );
@@ -1913,56 +1922,59 @@
 				$get_options = $prdctfltr_global['preset'];
 			}
 
-			if ( !isset( $prdctfltr_global['disable_overrides'] ) || ( isset( $prdctfltr_global['disable_overrides'] ) && $prdctfltr_global['disable_overrides'] !== 'yes' ) ) {
+			if ( !isset( $prdctfltr_global['mobile'] ) ) {
+				if ( !isset( $prdctfltr_global['disable_overrides'] ) || ( isset( $prdctfltr_global['disable_overrides'] ) && $prdctfltr_global['disable_overrides'] !== 'yes' ) ) {
 
-				$overrides = get_option( 'prdctfltr_overrides', array() );
+					$overrides = get_option( 'prdctfltr_overrides', array() );
 
-				$pf_check_overrides = self::$settings['wc_settings_prdctfltr_more_overrides'];
+					$pf_check_overrides = self::$settings['wc_settings_prdctfltr_more_overrides'];
 
-				foreach ( $pf_check_overrides as $pf_check_override ) {
+					foreach ( $pf_check_overrides as $pf_check_override ) {
 
-					$override = ( isset( $pf_activated[$pf_check_override][0] ) ? $pf_activated[$pf_check_override][0] : '' );
+						$override = ( isset( $pf_activated[$pf_check_override][0] ) ? $pf_activated[$pf_check_override][0] : '' );
 
-					if ( $override !== '' ) {
+						if ( $override !== '' ) {
 
-						if ( term_exists( $override, $pf_check_override ) == null ) {
-							continue;
-						}
-
-						if ( is_array( $overrides ) && isset( $overrides[$pf_check_override] ) ) {
-
-							if ( array_key_exists( $override, $overrides[$pf_check_override] ) ) {
-								$get_options = $overrides[$pf_check_override][$override];
-								break;
+							if ( term_exists( $override, $pf_check_override ) == null ) {
+								continue;
 							}
 
-							else if ( is_taxonomy_hierarchical( $pf_check_override ) ) {
-								$check = get_term_by( 'slug', $override, $pf_check_override );
+							if ( is_array( $overrides ) && isset( $overrides[$pf_check_override] ) ) {
 
-								if ( $check->parent !== 0 ) {
-
-									$parents = get_ancestors( $check->term_id, $pf_check_override );
-
-									foreach( $parents as $parent_id ) {
-										$check_parent = get_term_by( 'id', $parent_id, $pf_check_override );
-										if ( array_key_exists( $check_parent->slug, $overrides[$pf_check_override]) ) {
-											$get_options = $overrides[$pf_check_override][$check_parent->slug];
-											break;
-										}
-									}
-
+								if ( array_key_exists( $override, $overrides[$pf_check_override] ) ) {
+									$get_options = $overrides[$pf_check_override][$override];
+									break;
 								}
-							}
 
+								else if ( is_taxonomy_hierarchical( $pf_check_override ) ) {
+									$check = get_term_by( 'slug', $override, $pf_check_override );
+
+									if ( $check->parent !== 0 ) {
+
+										$parents = get_ancestors( $check->term_id, $pf_check_override );
+
+										foreach( $parents as $parent_id ) {
+											$check_parent = get_term_by( 'id', $parent_id, $pf_check_override );
+											if ( array_key_exists( $check_parent->slug, $overrides[$pf_check_override]) ) {
+												$get_options = $overrides[$pf_check_override][$check_parent->slug];
+												break;
+											}
+										}
+
+									}
+								}
+
+							}
 						}
 					}
 				}
-			}
 
-			if ( !isset( $get_options ) && self::$settings['wc_settings_prdctfltr_shop_page_override'] !== '' && is_shop() && !is_product_taxonomy() ) {
-				$get_options = self::$settings['wc_settings_prdctfltr_shop_page_override'];
-			}
+				if ( !isset( $get_options ) && self::$settings['wc_settings_prdctfltr_shop_page_override'] !== '' && is_shop() && !is_product_taxonomy() ) {
+					$get_options = self::$settings['wc_settings_prdctfltr_shop_page_override'];
+				}
 
+			}
+ 
 			if ( isset( $get_options ) && $get_options !== '' ) {
 				$prdctfltr_global['preset'] = $get_options;
 			}
@@ -2069,6 +2081,25 @@
 			}
 
 			$args['hide_empty'] = self::$settings['wc_settings_prdctfltr_hideempty'];
+
+			$orderby = isset( $args['orderby'] ) ? $args['orderby'] : wc_attribute_orderby( $term );
+			$get_terms_args = array();
+
+			switch ( $orderby ) {
+				case 'name' :
+					$get_terms_args['orderby']    = 'name';
+					$get_terms_args['menu_order'] = false;
+				break;
+				case 'id' :
+					$get_terms_args['orderby']    = 'id';
+					$get_terms_args['order']      = 'ASC';
+					$get_terms_args['menu_order'] = false;
+				break;
+				case 'menu_order' :
+					$get_terms_args['menu_order'] = 'ASC';
+				break;
+			}
+			$args = array_merge( $args, $get_terms_args );
 
 			$terms = get_terms( $term, $args );
 
@@ -2450,7 +2481,7 @@
 			else {
 
 				$_min = floor( $wpdb->get_var(
-					$wpdb->prepare('
+					sprintf('
 						SELECT min(meta_value + 0)
 						FROM %1$s
 						LEFT JOIN %2$s ON %1$s.ID = %2$s.post_id
@@ -2461,7 +2492,7 @@
 				);
 
 				$_max = ceil( $wpdb->get_var(
-					$wpdb->prepare('
+					sprintf('
 						SELECT max(meta_value + 0)
 						FROM %1$s
 						LEFT JOIN %2$s ON %1$s.ID = %2$s.post_id
@@ -2544,7 +2575,7 @@
 					}
 
 
-					$pf_count = $wpdb->get_var( $wpdb->prepare( $pf_parent, $wpdb->term_taxonomy ) );
+					$pf_count = $wpdb->get_var( sprintf( $pf_parent, $wpdb->term_taxonomy ) );
 
 					$term_count_real = $pf_count;
 				}
@@ -2803,7 +2834,7 @@
 				'pfa_include' => array(),
 				'pfa_orderby' => 'name',
 				'pfa_order' => 'ASC',
-				'pfa_multi' => 'no',
+				'pfa_multiselect' => 'no',
 				'pfa_relation' => 'IN',
 				'pfa_adoptive' => 'no',
 				'pfa_selection' => 'no',
@@ -2954,12 +2985,12 @@
 				?>
 					</span>
 				<?php
-					// self::get_top_bar_showing();
+					self::get_top_bar_showing();
 				?>
 				</span>
 			<?php
 			}
-			
+
 		}
 
 		public static function get_action_tag() {
@@ -3263,10 +3294,10 @@
 
 			global $woocommerce_wpml;
 
-			if ( !empty( $woocommerce_wpml ) ) {
+			if ( !empty( $woocommerce_wpml ) && method_exists( $woocommerce_wpml, 'multi_currency' ) ) {
 				$multi_currency = $woocommerce_wpml->multi_currency;
 
-				if ( $multi_currency->get_client_currency() !== get_option( 'woocommerce_currency' ) ) {
+				if ( $multi_currency !== null && $multi_currency->get_client_currency() !== get_option( 'woocommerce_currency' ) ) {
 					if ( isset( $meta_query['price_filter'] ) && isset($meta_query['price_filter']['key']) && $meta_query['price_filter']['key'] === '_price' ) {
 						$meta_query['price_filter']['value'][0] = $multi_currency->prices->unconvert_price_amount( $meta_query['price_filter']['value'][0] );
 						$meta_query['price_filter']['value'][1] = $multi_currency->prices->unconvert_price_amount( $meta_query['price_filter']['value'][1] );
@@ -3652,7 +3683,7 @@
 						'orderby'       => self::$settings['instance']['wc_settings_prdctfltr_advanced_filters']['pfa_orderby'][$n],
 						'order'         => self::$settings['instance']['wc_settings_prdctfltr_advanced_filters']['pfa_order'][$n],
 						'limit'         => self::$settings['instance']['wc_settings_prdctfltr_advanced_filters']['pfa_limit'][$n],
-						'multi'         => self::$settings['instance']['wc_settings_prdctfltr_advanced_filters']['pfa_multi'][$n],
+						'multi'         => self::$settings['instance']['wc_settings_prdctfltr_advanced_filters']['pfa_multiselect'][$n],
 						'relation'      => self::$settings['instance']['wc_settings_prdctfltr_advanced_filters']['pfa_relation'][$n],
 						'selection'     => self::$settings['instance']['wc_settings_prdctfltr_advanced_filters']['pfa_selection'][$n],
 						'adoptive'      => self::$settings['instance']['wc_settings_prdctfltr_advanced_filters']['pfa_adoptive'][$n],
@@ -4008,24 +4039,10 @@
 				$pf_curr_min = floor( $prices->min_price );
 				$pf_curr_max = ceil( $prices->max_price );
 
-/*				if ( $pf_curr_min == $pf_curr_max ) {
-					$pf_curr_min = $pf_curr_min-5;
-					$pf_curr_max = $pf_curr_max+5;
-				}
-
-				if ( isset( self::$settings['pf_activated']['rng_min_' . self::$filter['taxonomy']] ) && floor( self::$settings['pf_activated']['rng_min_' . self::$filter['taxonomy']] ) < $pf_curr_min ) {
-					$pf_curr_min = floor( self::$settings['pf_activated']['rng_min_' . self::$filter['taxonomy']] );
-				}
-
-				if ( isset( self::$settings['pf_activated']['rng_max_' . self::$filter['taxonomy']] ) && floor( self::$settings['pf_activated']['rng_max_' . self::$filter['taxonomy']] ) > $pf_curr_max ) {
-					$pf_curr_max = floor( self::$settings['pf_activated']['rng_max_' . self::$filter['taxonomy']] );
-				}
-
-				$pf_curr_min = self::price_to_float( strip_tags( wc_price( $pf_curr_min ) ) );
-				$pf_curr_max = self::price_to_float( strip_tags( wc_price( $pf_curr_max ) ) );*/
-
 				$prdctfltr_global['ranges'][$rngId]['min'] = apply_filters( 'wcml_raw_price_amount', $pf_curr_min );
 				$prdctfltr_global['ranges'][$rngId]['max'] = apply_filters( 'wcml_raw_price_amount', $pf_curr_max );
+				$prdctfltr_global['ranges'][$rngId]['minR'] = $pf_curr_min;
+				$prdctfltr_global['ranges'][$rngId]['maxR'] = $pf_curr_max;
 
 				if ( self::$filter['custom'] !== '' ) {
 					$add_rng_js = self::$filter['custom'];
@@ -4050,13 +4067,6 @@
 					break;
 				}
 
-				/*if ( isset( self::$settings['pf_activated']['rng_min_' . self::$filter['taxonomy']] ) ) {
-					$prdctfltr_global['ranges'][$rngId]['from'] = apply_filters( 'wcml_raw_price_amount', floor( self::price_to_float( strip_tags( wc_price( self::$settings['pf_activated']['rng_min_' . self::$filter['taxonomy']] ) ) ) ) );
-				}
-
-				if ( isset( self::$settings['pf_activated']['rng_max_' . self::$filter['taxonomy']] ) ) {
-					$prdctfltr_global['ranges'][$rngId]['to'] = apply_filters( 'wcml_raw_price_amount', ceil( self::price_to_float( strip_tags( wc_price(self::$settings['pf_activated']['rng_max_' . self::$filter['taxonomy']] ) ) ) ) );
-				}*/
 				if ( isset( self::$settings['pf_activated']['rng_min_' . self::$filter['taxonomy']] ) ) {
 					$prdctfltr_global['ranges'][$rngId]['from'] = self::$settings['pf_activated']['rng_min_' . self::$filter['taxonomy']];
 				}
@@ -4118,8 +4128,6 @@
 
 				printf('<label class="prdctfltr_ft_none"><input type="checkbox" value="" /><span>%1$s</span></label>', $blank );
 			}
-
-			//self::$settings['active_filters'][self::$filter['slug']] = array_merge( self::$settings['active_filters'][self::$filter['slug']], self::$filter['include'] );
 
 			self::get_taxonomy_terms( self::$filter['terms'], ( isset( self::$filter['customization']['options'] ) ? self::$filter['customization']['options'] : array() ), self::$filter['include'], self::$filter['selected'], ( isset( self::$settings['adoptive'] ) ? self::$settings['adoptive'] : null ) );
 
@@ -4354,7 +4362,7 @@
 							'post_type'				=> 'product',
 							'post_status'			=> 'publish',
 							'fields'				=> 'ids',
-							'posts_per_page'		=> 29999
+							'posts_per_page'		=> apply_filters( 'prdctfltr_adoptive_precision', 999 )
 						);
 
 						if ( self::$wc_version === false ) {
@@ -4422,7 +4430,7 @@
 							$t_str = substr( $request, 0, $t_pos );
 						}
 
-						$t_str .= ' LIMIT 0,29999 ';
+						$t_str .= ' LIMIT 0,' . apply_filters( 'prdctfltr_adoptive_precision', 999 ) . ' ';
 
 						global $wpdb;
 						$pf_products = $wpdb->get_results( $t_str );
@@ -4467,7 +4475,7 @@
 							GROUP BY slug,taxonomy
 						';
 
-						$pf_product_terms = $wpdb->get_results( $wpdb->prepare( $pf_product_terms_query, $wpdb->posts, $wpdb->term_relationships, $wpdb->term_taxonomy, $wpdb->terms ) );
+						$pf_product_terms = $wpdb->get_results( sprintf( $pf_product_terms_query, $wpdb->posts, $wpdb->term_relationships, $wpdb->term_taxonomy, $wpdb->terms ) );
 						$pf_adpt_set = array();
 
 						foreach ( $pf_product_terms as $p ) {

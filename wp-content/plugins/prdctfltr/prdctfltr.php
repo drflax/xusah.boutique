@@ -4,7 +4,7 @@ Plugin Name: WooCommerce Product Filter
 Plugin URI: http://www.mihajlovicnenad.com/product-filter
 Description: Advanced product filter for any Wordpress template! - mihajlovicnenad.com
 Author: Mihajlovic Nenad
-Version: 6.4.1
+Version: 6.4.2
 Author URI: https://www.mihajlovicnenad.com
 Text Domain: prdctfltr
 */
@@ -17,7 +17,7 @@ if ( !class_exists( 'PrdctfltrInit' ) ) :
 
 	final class PrdctfltrInit {
 
-		public static $version = '6.4.1';
+		public static $version = '6.4.2';
 
 		protected static $_instance = null;
 

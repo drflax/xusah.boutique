@@ -295,6 +295,10 @@ span.prdctfltr_override {
 	padding-bottom:20px;
 }
 
+.prdctfltr_hidden {
+	display:none;
+}
+
 
 /*------------------------------------------------------------------
 [Quickview Terms]
