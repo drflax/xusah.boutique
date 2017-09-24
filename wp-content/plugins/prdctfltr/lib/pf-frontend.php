@@ -2985,7 +2985,7 @@
 				?>
 					</span>
 				<?php
-					self::get_top_bar_showing();
+					// self::get_top_bar_showing();
 				?>
 				</span>
 			<?php

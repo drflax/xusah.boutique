@@ -2344,8 +2344,8 @@ nav.prdctfltr-pagination.prdctfltr-pagination-default ul li span.current {
 }
 
 .prdctfltr_woocommerce_filter_title:after {
-	content: '/';
-	margin:0 4px;
+/*	content: '/';
+	margin:0 4px;*/
 }
 
 /*------------------------------------------------------------------
