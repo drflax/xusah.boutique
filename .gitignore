@@ -69,12 +69,13 @@ wp-content/themes/twentyseventeen/
 wp-content/themes/twentysixteen/
 wp-content/themes/twentyfifteen/
 wp-content/themes/storefront/
-wp-content/themes/storefront-blank-child-theme/
+!wp-content/themes/storefront-blank-child-theme/style.css
+!wp-content/themes/storefront-blank-child-theme/function.php
 
 
 !wp-content/plugins/prdctfltr/
 !wp-content/plugins/openswatch/
 !wp-content/plugins/iconic-woothumbs/
-!wp-content/themes/storefront-blank-child-theme/style.css
 
 
+/nbproject/private/

@@ -1,0 +1,96 @@
+.variations a.reset_variations {
+    display: inline-block !important;
+}
+
+#payment.woocommerce-checkout-payment .terms input,
+#payment.woocommerce-checkout-payment .payment_methods li label {
+    display: block;
+    margin-left: 20px;
+}
+
+#payment.woocommerce-checkout-payment .payment_methods li label {
+    padding-top: 4px !important;
+    overflow: hidden;
+    width: auto;
+}
+
+#payment.woocommerce-checkout-payment .terms label {
+    display: block;
+}
+
+.woocommerce-checkout table tbody td {
+    background: transparent;
+    word-break: break-word;
+}
+
+.woocommerce-checkout table td {
+    word-break: break-word;
+}
+
+@media (max-width: 395px) {
+    .woocommerce-checkout table td,
+    .woocommerce-checkout table th {
+        display: block;
+    }
+    .woocommerce-checkout .customer_details > tbody:nth-child(1) > tr > td {
+        text-align: left;
+    }
+}
+@media (max-width: 767px) {
+	.checkout-margin-fix {
+	margin-bottom: 20px;
+}}
+
+/** fix: show coupon form **/
+.container-coupon-login-form {
+    display: block;
+}
+
+.single-product div.product .single-price {
+    font-size: 28px;
+    float: left;
+    margin-left: 20px;
+    margin-top: -5px;
+}
+
+.postcode-error {
+    color: #8a1f11;
+}
+
+form.checkout .woocommerce-error {
+    float: none;
+    position: initial;
+    width: auto;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    background-color: #e2401c !important;
+}
+/** newsletter archive **/
+.widget_wysija_cont .formError .formErrorArrow div {
+    background: #166477;
+}
+.formError .formErrorContent {
+    width: auto;
+}
+.formError {
+    top: initial;
+    left: initial;
+}
+/* fix coupon error message position in checkout */
+#main .entry-content .woocommerce > ul.woocommerce-error,
+#content .content-wrapper .woocommerce > ul.woocommerce-error {
+	position: initial;
+    float: none;
+    display: block;
+    margin: 1em 0.5em;
+	width: auto;
+	border-radius: 5px;
+	background-color: #e2401c !important;
+	text-align: left;
+}
+/* hide checkout content on start */
+.woocommerce-checkout #main .entry-content > .woocommerce {
+    display: none;
+}
