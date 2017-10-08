@@ -125,7 +125,7 @@ function get_rocket_config_file() {
 	 *
 	 * @param bool True to activate the common cache, false to ignore.
 	 */
-	if ( apply_filters(  'rocket_common_cache_logged_users', true ) ) {
+	if ( apply_filters(  'rocket_common_cache_logged_users', false ) ) {
 		$buffer .= '$rocket_common_cache_logged_users = 1;' . "\n";
 	}
 
