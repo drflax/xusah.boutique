@@ -76,6 +76,9 @@ wp-content/themes/storefront/
 !wp-content/plugins/prdctfltr/
 !wp-content/plugins/openswatch/
 !wp-content/plugins/iconic-woothumbs/
+!wp-content/plugins/wp-rocket/
 
 
 /nbproject/private/
+nbproject/project.properties
+nbproject/project.xml
