@@ -3,7 +3,7 @@
  * Plugin Name: WP Rocket
  * Plugin URI: https://wp-rocket.me
  * Description: The best WordPress performance plugin.
- * Version: 2.10.9
+ * Version: 3.10.9
  * Code Name: Endor
  * Author: WP Media
  * Contributors: Jonathan Buttigieg, Julio Potier, Remy Perona
@@ -19,7 +19,7 @@
 defined( 'ABSPATH' ) or die( 'Cheatin&#8217; uh?' );
 
 // Rocket defines.
-define( 'WP_ROCKET_VERSION'             , '2.10.9' );
+define( 'WP_ROCKET_VERSION'             , '3.10.9' );
 define( 'WP_ROCKET_PRIVATE_KEY'         , '73e2d8e85aa01cc39a8ce10fa26c7ebb');
 define( 'WP_ROCKET_SLUG'                , 'wp_rocket_settings' );
 define( 'WP_ROCKET_WEB_MAIN'            , 'https://wp-rocket.me/');
