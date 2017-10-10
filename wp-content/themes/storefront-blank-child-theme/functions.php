@@ -283,7 +283,6 @@ function wc_empty_cart_redirect_url() {
 add_filter( 'woocommerce_return_to_shop_redirect', 'wc_empty_cart_redirect_url' );
 
 add_filter( 'wc_add_to_cart_message', 'remove_add_to_cart_message' );
-apply_filters( 'rocket_common_cache_logged_users', true );
 
 function remove_add_to_cart_message() {
     return;
