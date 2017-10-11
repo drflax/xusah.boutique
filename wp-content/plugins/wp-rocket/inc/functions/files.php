@@ -125,12 +125,12 @@ function get_rocket_config_file() {
 	 *
 	 * @param bool True to activate the common cache, false to ignore.
 	 */
-	if ( apply_filters(  'rocket_common_cache_logged_users', true ) ) {
+	if ( apply_filters(  'rocket_common_cache_logged_users', false ) ) {
 		$buffer .= '$rocket_common_cache_logged_users = 1;' . "\n";
 	}
 
 	foreach ( $options as $option => $value ) {
-		if ( 'cache_ssl' === $option || 'cache_mobile' === $option || 'do_caching_mobile_files' === $option || 'secret_cache_key' === $option || 'minify_css_legacy' === $option || 'minify_js_legacy' === $option ) {
+		if ( 'cache_ssl' === $option || 'cache_mobile' === $option || 'do_caching_mobile_files' === $option || 'secret_cache_key' === $option || 'minify_css_legacy' === $option || 'minify_js_legacy' === $option || $option == 'common_cache_logged_users' ) {
 			$buffer .= '$rocket_' . $option . ' = \'' . $value . '\';' . "\n";
 		}
 
