@@ -63,7 +63,7 @@ function on_checkout_page($checkout){
 
 		// If the user is logged in and has already subscribed, don't show the subscription fields.
 		if( is_user_logged_in() && get_user_meta( get_current_user_id(), '_mailpoet_wc_subscribed_to_newsletter', true ) ){
-			return false;
+			// return false;
 		}
 
 		echo '<div id="mailpoet_subscription_section">';
