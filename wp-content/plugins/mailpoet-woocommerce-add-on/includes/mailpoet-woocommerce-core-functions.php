@@ -52,7 +52,7 @@ function on_checkout_page($checkout){
 	$field_value        = $checkbox_status == 'checked' ? 1 : 0; // Field Value
 
 	$is_subscribed = is_user_subscribed( get_current_user_id(), $checkout->get_value('billing_email') );
-	update_user_meta( get_current_user_id(), '_mailpoet_wc_subscribed_to_newsletter', $is_subscribed );
+	// update_user_meta( get_current_user_id(), '_mailpoet_wc_subscribed_to_newsletter', $is_subscribed );
 
 	/**
 	 * If the add-on is enabled and at least one list has been
@@ -63,7 +63,7 @@ function on_checkout_page($checkout){
 
 		// If the user is logged in and has already subscribed, don't show the subscription fields.
 		if( is_user_logged_in() && get_user_meta( get_current_user_id(), '_mailpoet_wc_subscribed_to_newsletter', true ) ){
-			// return false;
+			return false;
 		}
 
 		echo '<div id="mailpoet_subscription_section">';
@@ -171,7 +171,7 @@ function on_process_order(){
 		$subscribe_customer = false;
 		return false;
 	}
-
+	update_user_meta( get_current_user_id(), '_mailpoet_wc_subscribed_to_newsletter', $mailpoet_checkout_subscribe );
 	/**
 	 * If the customer does not want to subscribe 
 	 * or has already subscribed, we ignore the rest.
