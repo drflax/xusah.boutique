@@ -297,5 +297,5 @@ wp_dequeue_style('storefront-fonts');
 }
 
 add_action( 'wp_enqueue_scripts', 'remove_google_fonts', 999);
-
+apply_filters( 'rocket_common_cache_logged_users', true );
 ?>
